@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.user import User
 from schemas import UserSchema
 from extensions import db
-from utils import get_or_404, add_commit
+from utils import get_or_404, add_commit, dbs
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -24,7 +24,7 @@ def create_user():
 # get all users
 @bp.route("/", methods=["GET"])
 def get_users():
-    users = db.session.scalars(db.select(User)).all()
+    users = dbs.execute(db.select(User)).scalars().all()
     return jsonify(users_schema.dump(users))
 
 # get user by id

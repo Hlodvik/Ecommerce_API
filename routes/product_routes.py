@@ -20,7 +20,7 @@ def create_product():
 # get all products
 @bp.route("/", methods=["GET"])
 def get_products():
-    products = dbs.scalars(db.select(Product)).all()
+    products = dbs.execute(db.select(Product)).scalars().all()
     return jsonify(products_schema.dump(products))
 
 # get a product 

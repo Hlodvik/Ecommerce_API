@@ -20,7 +20,7 @@ def create_storefront():
 # get all storefronts
 @bp.route("/", methods=["GET"])
 def get_storefronts():
-    storefronts = dbs.scalars(db.select(Storefront)).all()
+    storefronts = dbs.execute(db.select(Storefront)).scalars().all()
     return jsonify(storefronts_schema.dump(storefronts))
 
 # get a storefront
