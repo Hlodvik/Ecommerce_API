@@ -13,8 +13,9 @@ bp = Blueprint("user_routes", __name__, url_prefix="/users" )
 @bp.route("/", methods=["POST"])
 def create_user():
     data = request.get_json()
-    new_user = user_schema.load(data)
-    add_commit(new_user)
+    new_user = User(**new_user) 
+    if isinstance(new_user, dict):  
+        add_commit(new_user)
     return jsonify(user_schema.dump(new_user)), 201
 
 # get all users
