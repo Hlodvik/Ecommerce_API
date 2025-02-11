@@ -13,7 +13,12 @@ bp = Blueprint("storefront_routes", __name__, url_prefix="/storefronts")
 @bp.route("/", methods=["POST"])
 def create_storefront():
     data = request.get_json()
-    new_storefront = storefront_schema.load(data)
+    loaded_data = storefront_schema.load(data)
+    if isinstance(loaded_data, dict):
+        new_storefront = Storefront(**loaded_data)  
+    else:
+        new_storefront = loaded_data  
+
     add_commit(new_storefront)
     return jsonify(storefront_schema.dump(new_storefront)), 201
 

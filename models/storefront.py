@@ -12,7 +12,7 @@ class Storefront(Base):
     __tablename__ = "storefront"
     #FIELDS
     id: Mapped[int] = mapped_column(primary_key=True)
-    business_info_id: Mapped[int] = mapped_column(ForeignKey("business_info.id"), unique=True, nullable=False)  # FK
+    business_info_id: Mapped[int] = mapped_column(ForeignKey("business_info.id"), unique=True, nullable=True)  # FK
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     #SHIPS
