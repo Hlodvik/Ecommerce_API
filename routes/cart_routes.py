@@ -27,13 +27,13 @@ def create_cart():
     return jsonify(cart_schema.dump(new_cart)), 201
 
 #get cart
-@bp.route("/<int:user_id>", methods=["GET"])
+@bp.route("/<int:user_id>/", methods=["GET"])
 def get_cart(user_id):
     cart = get_or_404(Cart, filters={"user_id": user_id})
     return jsonify(cart_schema.dump(cart))
 
 #delete cart
-@bp.route("/<int:user_id>", methods=["DELETE"])
+@bp.route("/<int:user_id>/", methods=["DELETE"])
 def delete_cart(user_id):
     cart = get_or_404(Cart, filters={"user_id": user_id})  # Ensure cart exists
     del_commit(cart)  # Delete and commit
@@ -43,7 +43,7 @@ def delete_cart(user_id):
 
 #=================cart/product table================
 #create item
-@bp.route("/<int:user_id>/items", methods=["POST"])
+@bp.route("/<int:user_id>/items/", methods=["POST"])
 def add_to_cart(user_id):
     data = request.get_json()
     product_id = data.get("product_id")
@@ -76,7 +76,7 @@ def add_to_cart(user_id):
     return jsonify({"message": "Product added to cart"}), 201
 
 #get items in cart
-@bp.route("/<int:user_id>/items", methods=["GET"])
+@bp.route("/<int:user_id>/items/", methods=["GET"])
 def get_cart_items(user_id):
     cart = get_or_404(Cart, filters={"user_id": user_id}) 
     product_ids = [row.product_id for row in db.session.execute(cart_product.select().where(cart_product.c.cart_id == cart.id)).scalars().all()]
@@ -87,7 +87,7 @@ def get_cart_items(user_id):
 
 
 #update items
-@bp.route("/<int:user_id>/items/<int:product_id>", methods=["PUT"])
+@bp.route("/<int:user_id>/items/<int:product_id>/", methods=["PUT"])
 def update_cart_item(user_id, product_id):
     data = request.get_json()
     quantity = data.get("quantity")
@@ -104,7 +104,7 @@ def update_cart_item(user_id, product_id):
     return jsonify({"message": "Cart item updated"}), 200
 
 
-@bp.route("/<int:user_id>/items/<int:product_id>", methods=["DELETE"])
+@bp.route("/<int:user_id>/items/<int:product_id>/", methods=["DELETE"])
 def remove_from_cart(user_id, product_id):
     cart = get_or_404(Cart, filters={"user_id": user_id})
     product = get_or_404(Product, product_id)

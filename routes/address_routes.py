@@ -19,7 +19,7 @@ def get_addresses():
     return jsonify(addresses_schema.dump(addresses))
 
 # get address
-@bp.route("/<int:address_id>", methods=["GET"])
+@bp.route("/<int:address_id>/", methods=["GET"])
 def get_address(address_id):
     address = db.session.get(Address, address_id)
     if not address:
@@ -27,7 +27,7 @@ def get_address(address_id):
     return jsonify(address_schema.dump(address))
 
 # create new address for the user
-@bp.route("/users/<int:user_id>/addresses", methods=["POST"])
+@bp.route("/users/<int:user_id>/addresses/", methods=["POST"])
 def add_address(user_id):
     data = request.get_json()
     
@@ -43,7 +43,7 @@ def add_address(user_id):
     return jsonify(address_schema.dump(new_address)), 201
 
 #edit/update address
-@bp.route("/addresses/<int:address_id>", methods=["PUT"])
+@bp.route("/addresses/<int:address_id>/", methods=["PUT"])
 def update_address(address_id):
     data = request.get_json()
     
@@ -61,7 +61,7 @@ def update_address(address_id):
     return jsonify(address_schema.dump(address))
 
 #delete address
-@bp.route("/addresses/<int:address_id>", methods=["DELETE"])
+@bp.route("/addresses/<int:address_id>/", methods=["DELETE"])
 def delete_address(address_id):
     address = db.session.get(Address, address_id)
     if not address:

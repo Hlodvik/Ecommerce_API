@@ -26,7 +26,7 @@ def get_payouts():
     return get_all(Payout, filters, payout_schema)
 
 # Update payout 
-@bp.route("/<int:payout_id>", methods=["PUT"])
+@bp.route("/<int:payout_id>/", methods=["PUT"])
 def update_payout(payout_id):
     payout = get_or_404(Payout, payout_id)
     data = request.get_json()
@@ -38,7 +38,7 @@ def update_payout(payout_id):
     return jsonify(payout_schema.dump(payout))
 
 #delete payout
-@bp.route("/<int:payout_id>", methods=["DELETE"])
+@bp.route("/<int:payout_id>/", methods=["DELETE"])
 def delete_payout(payout_id):
     payout = get_or_404(Payout, identifier=payout_id)
     del_commit(payout)

@@ -24,13 +24,13 @@ def get_payments():
     return get_all(Payment, filters=filters, schema=payments_schema)
 
 # get payment
-@bp.route("/<int:payment_id>", methods=["GET"])
+@bp.route("/<int:payment_id>/", methods=["GET"])
 def get_payment(payment_id):
     payment = get_or_404(Payment, payment_id)
     return jsonify(payment_schema.dump(payment))
 
 # update payment 
-@bp.route("/<int:payment_id>", methods=["PUT"])
+@bp.route("/<int:payment_id>/", methods=["PUT"])
 def update_payment(payment_id):
     payment = get_or_404(Payment, payment_id)
     data = request.get_json()
@@ -42,7 +42,7 @@ def update_payment(payment_id):
     return jsonify(payment_schema.dump(payment))
 
 # delete payment
-@bp.route("/<int:payment_id>", methods=["DELETE"])
+@bp.route("/<int:payment_id>/", methods=["DELETE"])
 def delete_payment(payment_id):
     payment = get_or_404(Payment, payment_id)
     del_commit(payment)

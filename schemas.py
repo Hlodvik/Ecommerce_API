@@ -6,7 +6,7 @@ ma = Marshmallow()
 # ----------------- BASE -----------------#
 class BaseSchema(Schema):
     id = fields.Int(dump_only=True)
-    created_at = fields.DateTime(dump_only=True)
+    created_at = fields.DateTime(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
 # ----------------- USER -----------------#
 class UserSchema(BaseSchema):

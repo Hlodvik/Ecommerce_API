@@ -24,14 +24,14 @@ def get_storefronts():
     return jsonify(storefronts_schema.dump(storefronts))
 
 # get a storefront
-@bp.route("/<int:storefront_id>", methods=["GET"])
+@bp.route("/<int:storefront_id>/", methods=["GET"])
 def get_storefront(storefront_id):
     storefront = get_or_404(Storefront, storefront_id)
 
     return jsonify(storefront_schema.dump(storefront))
 
 #update storefront
-@bp.route("/<int:storefront_id>", methods=["PATCH"])
+@bp.route("/<int:storefront_id>/", methods=["PATCH"])
 def update_storefront(storefront_id):
     storefront = get_or_404(Storefront, storefront_id)
     data = request.get_json()
@@ -43,7 +43,7 @@ def update_storefront(storefront_id):
     return jsonify(storefront_schema.dump(storefront)), 200
 
 #delete storefront
-@bp.route("/<int:storefront_id>", methods=["DELETE"])
+@bp.route("/<int:storefront_id>/", methods=["DELETE"])
 def delete_storefront(storefront_id):
     storefront = get_or_404(Storefront, storefront_id)
     del_commit(storefront)   
@@ -51,7 +51,7 @@ def delete_storefront(storefront_id):
 
 #===================storefront/user table routes=====================#
 #create admin
-@bp.route("/<int:storefront_id>/admins", methods=["POST"])
+@bp.route("/<int:storefront_id>/admins/", methods=["POST"])
 def add_storefront_admin(storefront_id):
     data = request.get_json()
     user_id = data.get("user_id")
@@ -70,13 +70,13 @@ def add_storefront_admin(storefront_id):
 
     return jsonify({"message": "Admin added"}), 201
 #get admins
-@bp.route("/<int:storefront_id>/admins", methods=["GET"])
+@bp.route("/<int:storefront_id>/admins/", methods=["GET"])
 def get_storefront_admins(storefront_id):
     storefront = get_or_404(Storefront, storefront_id)
     return jsonify(users_schema.dump(storefront.admins)), 200
 
 #remove admin
-@bp.route("/<int:storefront_id>/admins/<int:user_id>", methods=["DELETE"])
+@bp.route("/<int:storefront_id>/admins/<int:user_id>/", methods=["DELETE"])
 def remove_storefront_admin(storefront_id, user_id):
     storefront = get_or_404(Storefront, storefront_id)
     admin = get_or_404(User, user_id)

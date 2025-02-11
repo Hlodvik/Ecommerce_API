@@ -25,14 +25,14 @@ def get_products():
     return jsonify(products_schema.dump(products))
 
 # get a product 
-@bp.route("/<int:product_id>", methods=["GET"])
+@bp.route("/<int:product_id>/", methods=["GET"])
 def get_product(product_id):
     product = get_or_404(Product, product_id)
 
     return jsonify(product_schema.dump(product))
 
 # update a product
-@bp.route("/<int:product_id>", methods=["PUT"])
+@bp.route("/<int:product_id>/", methods=["PUT"])
 def update_product(product_id):
     product = get_or_404(Product, product_id)
     data = request.get_json()
@@ -42,7 +42,7 @@ def update_product(product_id):
     return jsonify(product_schema.dump(product))
 
 # delete a product
-@bp.route("/<int:product_id>", methods=["DELETE"])
+@bp.route("/<int:product_id>/", methods=["DELETE"])
 def delete_product(product_id):
     product = get_or_404(Product, product_id)
     del_commit(product)

@@ -41,7 +41,7 @@ def get_orders():
     return get_all(Order, schema=orders_schema)
 
 # get a specific order
-@bp.route("/<int:order_id>", methods=["GET"])
+@bp.route("/<int:order_id>/", methods=["GET"])
 def get_order(order_id):
     order = get_or_404(Order, order_id)
     return jsonify(order_schema.dump(order))
@@ -49,7 +49,7 @@ def get_order(order_id):
 
 
 # update order 
-@bp.route("/<int:order_id>", methods=["PUT"])
+@bp.route("/<int:order_id>/", methods=["PUT"])
 def update_order(order_id):
     order = get_or_404(Order, order_id)
     data = request.get_json()
@@ -61,7 +61,7 @@ def update_order(order_id):
     return jsonify(order_schema.dump(order))
 
 # delete an order
-@bp.route("/<int:order_id>", methods=["DELETE"])
+@bp.route("/<int:order_id>/", methods=["DELETE"])
 def delete_order(order_id):
     order = get_or_404(Order, order_id)
     del_commit(order)
@@ -73,7 +73,7 @@ def delete_order(order_id):
 #==============================Order/product table routes===================================#
 
 #create item in order
-@bp.route("/<int:order_id>/items", methods=["POST"])
+@bp.route("/<int:order_id>/items/", methods=["POST"])
 def add_to_order(order_id):
     data = request.get_json()
     product_id = data.get("product_id")
@@ -85,7 +85,7 @@ def add_to_order(order_id):
     return jsonify({"message": "Product added to order"}), 201
 
 # get item 
-@bp.route("/<int:order_id>/products", methods=["GET"])
+@bp.route("/<int:order_id>/products/", methods=["GET"])
 def get_order_products(order_id):
     order = get_or_404(Order, order_id)  # do I exist?
     product_ids = [row.product_id for row in dbs.execute(order_product.select().where(order_product.c.order_id == order.id)).one_or_none] # get product id's from order
@@ -94,7 +94,7 @@ def get_order_products(order_id):
     return get_all(Product, filters={"id": product_ids}, schema=products_schema)
 
 #update item
-@bp.route("/<int:order_id>/items/<int:product_id>", methods=["PUT"])
+@bp.route("/<int:order_id>/items/<int:product_id>/", methods=["PUT"])
 def update_order_item(order_id, product_id):
     data = request.get_json()
     quantity = data.get("quantity")
@@ -107,7 +107,7 @@ def update_order_item(order_id, product_id):
     return jsonify({"message": "Order item updated"}), 200
 
 #delete item
-@bp.route("/<int:order_id>/items/<int:product_id>", methods=["DELETE"])
+@bp.route("/<int:order_id>/items/<int:product_id>/", methods=["DELETE"])
 def remove_order_item(order_id, product_id):
     order = get_or_404(Order, order_id)
     product = get_or_404(Product, product_id)

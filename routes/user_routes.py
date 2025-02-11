@@ -7,7 +7,7 @@ from utils import get_or_404, add_commit
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-bp = Blueprint("user_routes", __name__, url_prefix="/users")
+bp = Blueprint("user_routes", __name__, url_prefix="/users" )
 
 # create user
 @bp.route("/", methods=["POST"])
@@ -24,13 +24,13 @@ def get_users():
     return jsonify(users_schema.dump(users))
 
 # get user by id
-@bp.route("/<int:user_id>", methods=["GET"])
+@bp.route("/<int:user_id>/", methods=["GET"])
 def get_user(user_id):
     user = get_or_404(User, user_id)
     return jsonify(user_schema.dump(user))
 
 # update user
-@bp.route("/<int:user_id>", methods=["PUT"])
+@bp.route("/<int:user_id>/", methods=["PUT"])
 def update_user(user_id):
     user = get_or_404(User, user_id)
     data = request.get_json()
@@ -40,7 +40,7 @@ def update_user(user_id):
     return jsonify(user_schema.dump(user))
 
 # delete user
-@bp.route("/<int:user_id>", methods=["DELETE"])
+@bp.route("/<int:user_id>/", methods=["DELETE"])
 def delete_user(user_id):
     user = get_or_404(User, user_id)
     db.session.delete(user)
