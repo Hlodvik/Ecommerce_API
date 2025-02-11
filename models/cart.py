@@ -1,13 +1,14 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, DateTime 
 from datetime import datetime, timezone
 from .base import Base
 from models.associations import cart_product
+if TYPE_CHECKING():
+    from models import User, Product
 
 # Shopping carts are standard across ecommerce sites, so chose to include 
-
-
-
 
 class Cart(Base):
     __tablename__ = "cart"

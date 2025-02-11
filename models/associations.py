@@ -1,6 +1,8 @@
 from sqlalchemy import Table, Column, ForeignKey, Integer, Numeric
 from .base import Base
 
+
+
 #sellers / storefronts
 user_storefront = Table(
     "user_storefront",

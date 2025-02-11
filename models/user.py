@@ -1,8 +1,13 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import  Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey, DateTime
 from datetime import datetime, timezone
 from .base import Base
 from models.associations import user_storefront
+if TYPE_CHECKING():
+    from models import Address, Storefront, Order, Cart, Payment, Payout
+
 
 class User(Base):
     __tablename__ = "user"

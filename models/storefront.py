@@ -1,10 +1,12 @@
-
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey, DateTime, Table, Column
 from datetime import datetime, timezone
 from .base import Base
 from models.associations import user_storefront
-
+if TYPE_CHECKING():
+    from models import Seller, Product, BusinessInfo
 
 class Storefront(Base):
     __tablename__ = "storefront"

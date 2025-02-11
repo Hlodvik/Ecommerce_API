@@ -1,8 +1,11 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+from __future__ import annotations
 from sqlalchemy.orm import  Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey
 from .base import Base
-
+if TYPE_CHECKING():
+    from models import User, Order
 
 class Address(Base):
     __tablename__ = "address"

@@ -32,8 +32,3 @@ if __name__ == "__main__":
         from services.dm_service import seed_dm_cache 
         seed_dm_cache()
     app.run(debug=True)
-    from models import User
-    user = User(name="Test User", email="test@email.com")
-    db.session.add(user)
-    db.session.commit()
-    print(User.query.all())

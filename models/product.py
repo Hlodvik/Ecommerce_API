@@ -1,9 +1,14 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, String, Boolean, Numeric, Integer, DateTime
 from typing import Optional
 from decimal import Decimal
 from .base import Base
 from models.associations import cart_product, order_product
+if TYPE_CHECKING():
+    from models import Storefront, Order, Cart
+
 
 class Product(Base):
     __tablename__ = "product"

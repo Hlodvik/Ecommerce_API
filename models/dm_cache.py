@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from extensions import db
 from sqlalchemy import Column, Integer, String, Float, Text
 from .base import Base
