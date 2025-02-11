@@ -5,7 +5,7 @@ from sqlalchemy import String, ForeignKey, DateTime, Numeric
 from datetime import datetime, timezone
 from decimal import Decimal
 from .base import Base
-if TYPE_CHECKING():
+if TYPE_CHECKING:
     from models import User, Order, Payout
 
 class Payment(Base):

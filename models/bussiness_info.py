@@ -5,7 +5,7 @@ from sqlalchemy import String, ForeignKey, DateTime
 from datetime import datetime, timezone
 from typing import Optional
 from .base import Base
-if TYPE_CHECKING():
+if TYPE_CHECKING:
     from models import Storefront
 
     

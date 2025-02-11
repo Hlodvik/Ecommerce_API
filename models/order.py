@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, String, DateTime
 from datetime import datetime, timezone
 from .base import Base
 from models.associations import order_product
-if TYPE_CHECKING():
+if TYPE_CHECKING:
     from models import User, Address, Product, Payment, Payout
 
 
