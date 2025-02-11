@@ -19,7 +19,7 @@ def create_cart():
         return jsonify({"message": "Missing user_id"}), 400
     
     user = get_or_404(User, user_id)
-    existing_cart = dbs.execute(db.select(Cart).filter_by(user_id=user_id)).scalar_one_or_none()
+    existing_cart = dbs.execute(db.select(Cart).filter_by(user_id=user_id)).one_or_none()
     if existing_cart:
         return jsonify({"message": "User already has a cart"}), 400
 
@@ -53,7 +53,7 @@ def add_to_cart(user_id):
 
     cart = get_or_404(Cart, filters={"user_id": user_id})
     product = get_or_404(Product, product_id)
-    address = dbs.execute(db.select(Address).filter_by(user_id=user_id, is_default=True)).scalar_one_or_none()
+    address = dbs.execute(db.select(Address).filter_by(user_id=user_id, is_default=True)).one_or_none()
     country_code = address.country 
     dm_data = check_product_dm(country_code)
     if product.price > dm_data["de_minimis_value"]:
@@ -67,11 +67,9 @@ def add_to_cart(user_id):
             "de_minimis_currency": dm_data["de_minimis_currency"]
         }), 200   
 
-
-    existing_item = db.session.execute(cart_product.select().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id)).scalar_one_or_none()
+    existing_item = db.session.execute(cart_product.select().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id)).one_or_none()
     if existing_item:
         return jsonify({"message": "Product is already in cart"}), 400
-
     exe_commit(cart_product.insert().values(cart_id=cart.id, product_id=product.id, quantity=quantity))
     return jsonify({"message": "Product added to cart"}), 201
 
@@ -82,7 +80,6 @@ def get_cart_items(user_id):
     product_ids = [row.product_id for row in db.session.execute(cart_product.select().where(cart_product.c.cart_id == cart.id)).scalars().all()]
     if not product_ids:
         return jsonify({"message": "Cart is empty"}), 200   
-
     return get_all(Product, filters={"id": product_ids}, schema=products_schema)
 
 
@@ -93,13 +90,11 @@ def update_cart_item(user_id, product_id):
     quantity = data.get("quantity")
     if not isinstance(quantity, int) or quantity < 1:
         return jsonify({"message": "Invalid quantity"}), 400
-
     cart = get_or_404(Cart, filters={"user_id": user_id})
     product = get_or_404(Product, product_id)
     existing_item = dbs.execute(cart_product.select().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id)).scalar_one_or_none()
     if not existing_item:
         return jsonify({"message": "Product is not in the cart"}), 400
-
     exe_commit(cart_product.update().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id).values(quantity=quantity))
     return jsonify({"message": "Cart item updated"}), 200
 
@@ -111,6 +106,5 @@ def remove_from_cart(user_id, product_id):
     existing_item = dbs.execute(cart_product.select().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id)).scalar_one_or_none()
     if not existing_item:
         return jsonify({"message": "Product is not in the cart"}), 400
-
     exe_commit(cart_product.delete().where(cart_product.c.cart_id == cart.id, cart_product.c.product_id == product.id))
     return "", 204 

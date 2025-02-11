@@ -88,7 +88,7 @@ def add_to_order(order_id):
 @bp.route("/<int:order_id>/products/", methods=["GET"])
 def get_order_products(order_id):
     order = get_or_404(Order, order_id)  # do I exist?
-    product_ids = [row.product_id for row in dbs.execute(order_product.select().where(order_product.c.order_id == order.id)).one_or_none] # get product id's from order
+    product_ids = [row.product_id for row in dbs.execute(order_product.select().where(order_product.c.order_id == order.id)).scalars().all()]# get product id's from order
     if not product_ids:
         return jsonify({"message": "No products found in this order"}), 404
     return get_all(Product, filters={"id": product_ids}, schema=products_schema)
@@ -102,7 +102,6 @@ def update_order_item(order_id, product_id):
     product = get_or_404(Product, product_id)
     if quantity == 0:
         return remove_order_item(order_id, product_id)
-    
     exe_commit(order_product.update().where(order_product.c.order_id == order.id, order_product.c.product_id == product.id).values(quantity=quantity))
     return jsonify({"message": "Order item updated"}), 200
 
@@ -111,6 +110,5 @@ def update_order_item(order_id, product_id):
 def remove_order_item(order_id, product_id):
     order = get_or_404(Order, order_id)
     product = get_or_404(Product, product_id)
-
     exe_commit(order_product.delete().where(order_product.c.order_id == order.id, order_product.c.product_id == product.id))
     return "", 204

@@ -13,9 +13,7 @@ def create_payout():
     data = request.get_json()
     payment = get_or_404(Payment, lookup={"order_id": data.get("order_id")})
     new_payout = Payout(order_id=payment.order.id, payment_id=payment.id, seller_id=data.get("seller_id"), amount=payment.amount, transaction_id=data["transaction_id"],status=data.get("status"))
-
     add_commit(new_payout)
-    
     return jsonify(payout_schema.dump(new_payout)), 201
 
 # get payout, can filter by order id

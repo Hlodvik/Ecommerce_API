@@ -15,7 +15,6 @@ def create_product():
     data = request.get_json()
     new_product = product_schema.load(data)
     add_commit(new_product)
-
     return jsonify(product_schema.dump(new_product)), 201
 
 # get all products
@@ -28,7 +27,6 @@ def get_products():
 @bp.route("/<int:product_id>/", methods=["GET"])
 def get_product(product_id):
     product = get_or_404(Product, product_id)
-
     return jsonify(product_schema.dump(product))
 
 # update a product
@@ -46,5 +44,4 @@ def update_product(product_id):
 def delete_product(product_id):
     product = get_or_404(Product, product_id)
     del_commit(product)
-
     return jsonify({"message": "Product deleted"}), 204

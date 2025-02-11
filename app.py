@@ -23,12 +23,12 @@ app.register_blueprint(payment_routes.bp)
 app.register_blueprint(storefront_routes.bp)
 app.register_blueprint(address_routes.bp)
 
-#populates the cache on init with hardcoded data based on what I gathered online 
+ 
 
 
 
 if __name__ == "__main__":
     with app.app_context():
         from services.dm_service import seed_dm_cache 
-        seed_dm_cache()
+        seed_dm_cache()#populates the cache on init with hardcoded data based on what I gathered online
     app.run(debug=True)
