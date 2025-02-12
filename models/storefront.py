@@ -20,12 +20,3 @@ class Storefront(Base):
     business_info: Mapped["BusinessInfo"] = relationship("BusinessInfo", back_populates="storefront", uselist=False)
     products: Mapped[list["Product"]] = relationship("Product", back_populates="storefront", foreign_keys="[Product.storefront_id]")
 
-
-class UserStorefront(Base):
-    __tablename__ = "user_storefront"
-    #FIELDS
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
-    storefront_id: Mapped[int] = mapped_column(ForeignKey("storefront.id"), primary_key=True)
-    #SHIPS
-    user: Mapped["User"] = relationship("User", back_populates="storefronts")
-    storefront: Mapped["Storefront"] = relationship("Storefront", back_populates="admins")
