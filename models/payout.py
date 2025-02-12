@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from .base import Base
 if TYPE_CHECKING:
-    from models import Seller, Order, Payment
+    from models import User, Order, Payment
 
 
 class Payout(Base):
@@ -24,4 +24,4 @@ class Payout(Base):
     # SHIPS
     order: Mapped["Order"] = relationship("Order", back_populates="payout", uselist=False)  # one to one
     payment: Mapped["Payment"] = relationship("Payment", back_populates="payout", uselist=False)  # one to one
-    seller: Mapped["Seller"] = relationship("Seller", back_populates="payouts")
+    user: Mapped["User"] = relationship("User", back_populates="payouts")

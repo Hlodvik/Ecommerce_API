@@ -21,10 +21,9 @@ class User(Base):
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="user")
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="user")
     cart: Mapped["Cart"] = relationship("Cart", back_populates="user", uselist=False)
-    
-
-class Seller(User):
-    __tablename__ = "seller"
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     storefronts: Mapped[list["Storefront"]] = relationship("Storefront", secondary=user_storefront, back_populates="admins")
-    payouts: Mapped[list["Payout"]] = relationship("Payout", back_populates="seller")
+    payouts: Mapped[list["Payout"]] = relationship("Payout", back_populates="user")
+    @property
+    def is_seller(self) -> bool:
+        return bool(self.storefronts)
+
