@@ -54,9 +54,10 @@ class ProductSchema(BaseSchema):
     description = fields.Str(allow_none=True)
     price = fields.Decimal(as_string=True, required=True)
     stock = fields.Int(required=True)
-    hs_code = fields.Str(required=True)
+    hs_code = fields.Str(required=False)
     restricted = fields.Bool(default=False)
     restriction_reason = fields.Str(allow_none=True)
+    storefront_id = fields.Int(required=True)     
     storefront = fields.Nested(lambda: StorefrontSchema(exclude=("products",)), dump_only=True)
 
 # ----------------- CART & ORDER, SVU ------------------#
