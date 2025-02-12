@@ -13,8 +13,9 @@ bp = Blueprint("product_routes", __name__, url_prefix="/products")
 @bp.route("/", methods=["POST"])
 def create_product():
     data = request.get_json()
-    new_product = product_schema.load(data)
-    add_commit(new_product)
+    product_data = product_schema.load(data)  
+    new_product = Product(**product_data)  #converts to product object
+    add_commit(new_product)  
     return jsonify(product_schema.dump(new_product)), 201
 
 # get all products
@@ -30,12 +31,13 @@ def get_product(product_id):
     return jsonify(product_schema.dump(product))
 
 # update a product
-@bp.route("/<int:product_id>/", methods=["PUT"])
+@bp.route("/<int:product_id>/", methods=["PATCH"])
 def update_product(product_id):
     product = get_or_404(Product, product_id)
     data = request.get_json()
-    product.name = data.get("name", product.name)
-    product.price = data.get("price", product.price)
+    for key, value in data.items():
+        if hasattr(product, key):
+            setattr(product, key, value)
     dbs.commit()
     return jsonify(product_schema.dump(product))
 
