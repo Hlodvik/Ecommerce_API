@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.user import User
 from schemas import UserSchema
 from extensions import db
-from utils import get_or_404, add_commit, dbs
+from utils import get_or_404, add_commit, del_commit, dbs
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -40,13 +40,12 @@ def update_user(user_id):
     data = request.get_json()
     user.name = data.get("name", user.name)
     user.email = data.get("email", user.email)
-    db.session.commit()
+    dbs.commit()
     return jsonify(user_schema.dump(user))
 
 # delete user
 @bp.route("/<int:user_id>/", methods=["DELETE"])
 def delete_user(user_id):
     user = get_or_404(User, user_id)
-    db.session.delete(user)
-    db.session.commit()
+    del_commit(user)
     return jsonify({"message": "User deleted"}), 204

@@ -7,9 +7,10 @@ from .base import Base
 user_storefront = Table(
     "user_storefront",
     Base.metadata,
-    Column("seller_id", ForeignKey("seller.user_id"), primary_key=True),
-    Column("storefront_id", ForeignKey("storefront.id"), primary_key=True)
+    Column("storefront_id", ForeignKey("storefront.id"), primary_key=True),
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
 )
+
 
 #products BEFORE CHECKOUT
 cart_product = Table(

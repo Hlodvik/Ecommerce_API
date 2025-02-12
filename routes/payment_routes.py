@@ -38,7 +38,7 @@ def update_payment(payment_id):
     for field in fields:
         if field in data:
             setattr(payment, field, data[field])
-    db.session.commit()
+    dbs.commit()
     return jsonify(payment_schema.dump(payment))
 
 # delete payment

@@ -13,30 +13,16 @@ bp = Blueprint("storefront_routes", __name__, url_prefix="/storefronts")
 # create storefront
 @bp.route("/", methods=["POST"])
 def create_storefront():
-    try:
-        data = request.get_json()
-        print("Received Data:", data)  # Debugging
+    data = request.get_json()
+    loaded_data = storefront_schema.load(data)
+    if isinstance(loaded_data, dict):
+        new_storefront = Storefront(**loaded_data)
+    else:
+        new_storefront = loaded_data
 
-        loaded_data = storefront_schema.load(data)
-        print("Loaded Data:", loaded_data)  # Debugging
+    add_commit(new_storefront)
+    return jsonify(storefront_schema.dump(new_storefront)), 201
 
-        if isinstance(loaded_data, dict):
-            new_storefront = Storefront(**loaded_data)
-        else:
-            new_storefront = loaded_data
-
-        print("New Storefront Object:", new_storefront)  # Debugging
-        add_commit(new_storefront)
-
-        return jsonify(storefront_schema.dump(new_storefront)), 201
-
-    except ValidationError as e:
-        print("Validation Error:", e.messages)  # Debugging
-        return jsonify({"error": e.messages}), 400  # Bad request for invalid data
-
-    except Exception as e:
-        print("Unexpected Error:", str(e))  # Debugging
-        return jsonify({"error": str(e)}), 500  # Generic error handling
 
 
 # get all storefronts
@@ -77,19 +63,16 @@ def delete_storefront(storefront_id):
 def add_storefront_admin(storefront_id):
     data = request.get_json()
     user_id = data.get("user_id")
-
     if not user_id:
         return jsonify({"message": "Missing user_id"}), 400
 
     storefront = get_or_404(Storefront, storefront_id)
     admin = get_or_404(User, user_id)
-
     if admin in storefront.admins:
         return jsonify({"message": "User is already an admin"}), 400
 
     storefront.admins.append(admin) 
     dbs.commit()
-
     return jsonify({"message": "Admin added"}), 201
 #get admins
 @bp.route("/<int:storefront_id>/admins/", methods=["GET"])

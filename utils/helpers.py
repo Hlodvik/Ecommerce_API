@@ -1,21 +1,22 @@
 from extensions import db
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 from models.product import Product
 from models.associations import order_product
 import requests
-
+from sqlalchemy.orm.exc import NoResultFound
 #see read me: @utils
 
-def get_or_404(model, id= None, cond = None): 
+def get_or_404(model, id=None, cond=None):
     if id is not None:
         instance = db.session.get(model, id)
     elif cond:
         instance = db.session.scalars(db.select(model).filter_by(**cond)).first()
-    
-    if not instance:
-        return jsonify({"message": f"{model.__name__} not found"}), 404
-    return instance
+    else:
+        abort(404, description=f"{model.__name__} not found")  
 
+    if not instance:
+        abort(404, description=f"{model.__name__} not found")  #abort was suggested when a route was getting returned a tuple from the previous code which returned a json message and an error
+    return instance
 
 def get_all(model, filters=None, schema=None):
     query = db.select(model)
@@ -35,9 +36,6 @@ def del_commit(instance):
 def exe_commit(conditions):
     db.session.execute(conditions)
     db.session.commit()
-
-
-dbs = db.session
 
 def check_product_dm(country_code):
     params = {
@@ -106,11 +104,8 @@ def check_product_dm(country_code):
                 "vat_currency": "USD",
                 "notes": "No data available"
             }
-        
 
-
-
-def order_products(order, products):
+def products_to_order(order, products):
     for product_data in products:
         product = get_or_404(Product, product_data["product_id"])
         quantity = product_data.get("quantity", 1)
@@ -121,7 +116,6 @@ def order_products(order, products):
         else:
             exe_commit(order_product.insert().values(order_id=order.id, product_id=product.id, quantity=quantity))
     
-
 def apply_dm_taxes(order):
     country_code = order.shipping_address.country_code  
     tax_data = check_product_dm(country_code)
@@ -137,3 +131,5 @@ def apply_dm_taxes(order):
 
             vat_amount = (vat_percentage / 100) * product_total if vat_percentage else 0
             exe_commit(order_product.update().where(order_product.c.order_id == order.id, order_product.c.product_id == entry.product_id).values(export_tax=vat_amount))
+
+dbs = db.session

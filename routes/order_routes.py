@@ -4,7 +4,7 @@ from models.product import Product
 from models.associations import order_product
 from schemas import OrderSchema, ProductSchema
 from extensions import db
-from utils import get_or_404, get_all, add_commit, del_commit, exe_commit, dbs, order_products, apply_dm_taxes
+from utils import get_or_404, get_all, add_commit, del_commit, exe_commit, dbs, products_to_order, apply_dm_taxes
 
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
@@ -78,11 +78,13 @@ def add_to_order(order_id):
     data = request.get_json()
     product_id = data.get("product_id")
     quantity = data.get("quantity", 1)
+    if not product_id:
+        return jsonify({"error": "product id required"}), 400
     order = get_or_404(Order, order_id)
     product = get_or_404(Product, product_id)
+    products_to_order(order, [{"product_id": product.id, "quantity": quantity}])
 
-    order_products(order, [data])
-    return jsonify({"message": "Product added to order"}), 201
+    return jsonify({"message": "Product added to order", "order_id": order_id, "product_id": product.id, "quantity": quantity}), 201
 
 # get item 
 @bp.route("/<int:order_id>/products/", methods=["GET"])
