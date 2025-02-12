@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models import Payout, Payment
+from models import Payout 
 from schemas import PayoutSchema
-from utils import get_all, get_or_404, add_commit, del_commit, dbs
+from routes.order_routes import create_order
+from utils import get_all, get_or_404, add_commit, exe_commit, del_commit, dbs
 payout_schema = PayoutSchema()
 
 bp = Blueprint("payout_routes", __name__, url_prefix="/payouts")
@@ -11,10 +12,30 @@ bp = Blueprint("payout_routes", __name__, url_prefix="/payouts")
 @bp.route("/", methods=["POST"])
 def create_payout():
     data = request.get_json()
-    payment = get_or_404(Payment, lookup={"order_id": data.get("order_id")})
-    new_payout = Payout(order_id=payment.order.id, payment_id=payment.id, seller_id=data.get("seller_id"), amount=payment.amount, transaction_id=data["transaction_id"],status=data.get("status"))
+    fields = ("user_id", "order_id", "amount", "transaction_id")   
+
+    # added this so that I could test this route in postman
+    if data.get("amount") and not data.get("order_id"):
+        order_data = {
+            "shipping_address_id": None,
+            "payment_id": None,
+            "products": [],
+            "amount": data["amount"]
+        }
+
+        response = create_order()   
+        if response.status_code != 201:# if doesn't succeed
+            return response  # return error 
+        
+        new_order = response.json  # extract created order from response
+        data["order_id"] = new_order["id"]  # assign order id for payout
+    if any(field not in data for field in fields):
+        return jsonify({"message": "Missing required fields"}), 400
+ 
+    new_payout = Payout(order_id=new_order.id, user_id=new_order.user_id, amount=data["amount"], transaction_id=data["transaction_id"], status="pending")
     add_commit(new_payout)
     return jsonify(payout_schema.dump(new_payout)), 201
+
 
 # get payout, can filter by order id
 @bp.route("/", methods=["GET"])

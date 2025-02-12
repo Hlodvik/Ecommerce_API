@@ -96,7 +96,7 @@ class PaymentSchema(BaseSchema):
 class PayoutSchema(BaseSchema):
     order = fields.Nested(lambda: OrderSchema(exclude=("payout",)), dump_only=True)
     payment = fields.Nested(lambda: PaymentSchema(exclude=("payout",)), dump_only=True)
-    seller = fields.Nested(lambda: UserSchema(exclude=("payouts",)), dump_only=True)
+    user = fields.Nested(lambda: UserSchema(exclude=("payouts",)), dump_only=True)
     amount = fields.Decimal(as_string=True, required=True)
     transaction_id = fields.Str(required=True)
     status = fields.Str(default="pending")

@@ -1,10 +1,13 @@
+from marshmallow import post_load
 from extensions import db
 from flask import Flask, jsonify, abort
-from models.product import Product
+from models import Product, Payout
 from models.associations import order_product
-import requests
-from sqlalchemy.orm.exc import NoResultFound
+from schemas import PayoutSchema
+import requests, random, string
+from datetime import datetime, timezone
 #see read me: @utils
+
 
 def get_or_404(model, id=None, cond=None):
     if id is not None:
@@ -131,5 +134,20 @@ def apply_dm_taxes(order):
 
             vat_amount = (vat_percentage / 100) * product_total if vat_percentage else 0
             exe_commit(order_product.update().where(order_product.c.order_id == order.id, order_product.c.product_id == entry.product_id).values(export_tax=vat_amount))
+
+def generate_transaction_id() -> str: 
+    random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    return f"TXN-{random_str}-{timestamp}"
+
+def create_payout(data: dict) -> Payout:
+    payout_data = PayoutSchema.load(data)
+    payout_data.amount = payout_data.payment.amount
+    payout_data.transaction_id = generate_transaction_id()
+
+    db.session.add(payout_data)
+    db.session.commit()
+
+    return payout_data
 
 dbs = db.session

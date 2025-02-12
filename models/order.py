@@ -13,10 +13,9 @@ class Order(Base):
     __tablename__ = "order"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-    shipping_address_id: Mapped[int] = mapped_column(ForeignKey("address.id"), nullable=False)
-    payment_id: Mapped[int] = mapped_column(ForeignKey("payment.id"), unique=True, nullable=False)
-
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True)# this and the next two i set nullable to true so that I could test routes in postman without having to make this data
+    shipping_address_id: Mapped[int] = mapped_column(ForeignKey("address.id"), nullable=True)
+    payment_id: Mapped[int] = mapped_column(ForeignKey("payment.id"), unique=True, nullable=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="pending")  # Order status
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
