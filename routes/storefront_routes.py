@@ -15,19 +15,27 @@ bp = Blueprint("storefront_routes", __name__, url_prefix="/storefronts")
 def create_storefront():
     try:
         data = request.get_json()
+        print("Received Data:", data)  # Debugging
+
         loaded_data = storefront_schema.load(data)
+        print("Loaded Data:", loaded_data)  # Debugging
 
         if isinstance(loaded_data, dict):
-            new_storefront = Storefront(**loaded_data)  
+            new_storefront = Storefront(**loaded_data)
         else:
-            new_storefront = loaded_data  
+            new_storefront = loaded_data
 
+        print("New Storefront Object:", new_storefront)  # Debugging
         add_commit(new_storefront)
+
         return jsonify(storefront_schema.dump(new_storefront)), 201
 
     except ValidationError as e:
+        print("Validation Error:", e.messages)  # Debugging
         return jsonify({"error": e.messages}), 400  # Bad request for invalid data
+
     except Exception as e:
+        print("Unexpected Error:", str(e))  # Debugging
         return jsonify({"error": str(e)}), 500  # Generic error handling
 
 
