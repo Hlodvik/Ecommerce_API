@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from .base import Base
 from models.associations import user_storefront
 if TYPE_CHECKING:
-    from models import Seller, Product, BusinessInfo, User
+    from models import  Product, BusinessInfo, User
 
 class Storefront(Base):
     __tablename__ = "storefront"
@@ -16,7 +16,7 @@ class Storefront(Base):
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     #SHIPS
-    admins: Mapped[list["Seller"]] = relationship("Seller", secondary=user_storefront, back_populates="storefronts") #many to many
+    admins: Mapped[list["User"]] = relationship("User", secondary=user_storefront, back_populates="storefronts") #many to many
     business_info: Mapped["BusinessInfo"] = relationship("BusinessInfo", back_populates="storefront", uselist=False)
     products: Mapped[list["Product"]] = relationship("Product", back_populates="storefront", foreign_keys="[Product.storefront_id]")
 

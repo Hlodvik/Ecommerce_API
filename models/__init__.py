@@ -2,7 +2,7 @@
 #thus is the advice I found. replaced models.py with the grand collection. copy and pasted imports for each module, 
 #hoping I remember to go back and erase what isnt used
 from .base import Base
-from .user import User, Seller
+from .user import User 
 from .address import Address
 from .storefront import Storefront
 from .order import Order
