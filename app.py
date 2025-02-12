@@ -10,7 +10,6 @@ from extensions import db
 app = Flask(__name__)
 app.config.from_object(config)
 
- 
 ma = Marshmallow(app)
 migrate = Migrate(app, db)  # Enable Flask-Migrate
 db.init_app(app)
@@ -22,9 +21,6 @@ app.register_blueprint(cart_routes.bp)
 app.register_blueprint(payment_routes.bp)
 app.register_blueprint(storefront_routes.bp)
 app.register_blueprint(address_routes.bp)
-
- 
-
 
 
 if __name__ == "__main__":

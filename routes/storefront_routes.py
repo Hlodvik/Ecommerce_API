@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
 from models import Storefront, User
 from schemas import StorefrontSchema, UserSchema
 from extensions import db
@@ -12,15 +13,23 @@ bp = Blueprint("storefront_routes", __name__, url_prefix="/storefronts")
 # create storefront
 @bp.route("/", methods=["POST"])
 def create_storefront():
-    data = request.get_json()
-    loaded_data = storefront_schema.load(data)
-    if isinstance(loaded_data, dict):
-        new_storefront = Storefront(**loaded_data)  
-    else:
-        new_storefront = loaded_data  
+    try:
+        data = request.get_json()
+        loaded_data = storefront_schema.load(data)
 
-    add_commit(new_storefront)
-    return jsonify(storefront_schema.dump(new_storefront)), 201
+        if isinstance(loaded_data, dict):
+            new_storefront = Storefront(**loaded_data)  
+        else:
+            new_storefront = loaded_data  
+
+        add_commit(new_storefront)
+        return jsonify(storefront_schema.dump(new_storefront)), 201
+
+    except ValidationError as e:
+        return jsonify({"error": e.messages}), 400  # Bad request for invalid data
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  # Generic error handling
+
 
 # get all storefronts
 @bp.route("/", methods=["GET"])

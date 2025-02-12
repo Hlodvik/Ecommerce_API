@@ -43,7 +43,7 @@ class BusinessInfoSchema(BaseSchema):
 
 class StorefrontSchema(BaseSchema):
     name = fields.Str(required=True)
-    business_info = fields.Nested(BusinessInfoSchema, dump_only=True)
+    business_info = fields.Nested(BusinessInfoSchema, dump_only=True, nullable=True)
     admins = fields.List(fields.Nested(lambda: SellerSchema(exclude=("storefronts",))), dump_only=True)
     products = fields.List(fields.Nested(lambda: ProductSchema(exclude=("storefront",))), dump_only=True)
 
