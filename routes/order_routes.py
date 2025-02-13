@@ -9,41 +9,30 @@ from utils import get_or_404, get_all, add_commit, del_commit, exe_commit, dbs, 
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
 products_schema = ProductSchema(many=True)
-
+payout_schema = PayoutSchema()
 bp = Blueprint("order_routes", __name__, url_prefix="/orders")
 
 #create order
 @bp.route("/", methods=["POST"])
 def create_order():
     data = request.get_json()
-    fields = ("user_id", "shipping_address_id", "payment_id", "products")
-##vvv commented out for testing routes
- ##   if any(field not in data for field in fields):
-  ##      return jsonify({"message": "Missing fields"}), 400
+    fields = ("user_id", "shipping_address_id", "payment_id", "products", "storefront_id")
+    if any(field not in data for field in fields):
+        return jsonify({"message": "Missing fields"}), 400
+    new_order = Order(**{field: data[field] for field in fields})
+    add_commit(new_order) 
 
-    new_order = Order(**{field: data[field] for field in fields}, status=data.get("status", "pending"))
-    add_commit(new_order)
-    if "amount" in data:
-        default_product = Product(name="Default Payout Item", hs_code="DEFAULT_HS_CODE", storefront_id=1, price=Decimal("0.01"), stock=999999999)
-        add_commit(default_product)  
+    for product_data in data["products"]:
+        product = get_or_404(Product, product_data["product_id"])
+        quantity = product_data.get("quantity", 1)
+        new_order.products.append(product)  
+        dbs.execute(order_product.update().where((order_product.c.order_id == new_order.id) & (order_product.c.product_id == product.id)).values(quantity=quantity))
 
-        quantity = int(Decimal(str(data["amount"])) / Decimal("0.01"))  # Convert amount to quantity
-
-        # Add the default product to order_product table
-        dbs.execute(order_product.insert().values(order_id=new_order.id, product_id=default_product.id, quantity=quantity))
-
-
-    else:
-        for product_data in data["products"]:
-            product = get_or_404(Product, product_data["product_id"])
-            quantity = product_data.get("quantity", 1)
-            dbs.execute(order_product.insert().values(order_id=new_order.id, product_id=product.id, quantity=quantity))
-
-    if new_order.shipping_address:  
+    # taxes if address is not none, makes testing routes easier 
+    if new_order.shipping_address_id:
         apply_dm_taxes(new_order)
-    add_commit(new_order)
+    dbs.commit()
     return jsonify(order_schema.dump(new_order)), 201
-
 
 
 # get all orders 
@@ -71,31 +60,25 @@ def update_order(order_id):
     dbs.commit()
     return jsonify(order_schema.dump(order))
 
-#solution to where should I trigger payout
+#trigger payout
 @bp.route("/orders/<int:order_id>/complete", methods=["POST"])
 def complete_order(order_id): 
     order = get_or_404(Order, order_id)
-    if order.status != "pending":
-        return 400
-    
-    payment = db.session.query(Payment).filter_by(order_id=order_id).first()
-    if not payment:
-        return jsonify({"error": "Payment not found"}), 400
 
+    if order.status != "pending":
+        return jsonify({"error": "status must be pending"}), 400
+ 
     # Update order status
     order.status = "completed"
-    db.session.commit()
+    dbs.commit()
 
-    # Create a payout
-    payout_data = {
-        "order": order,
-        "payment": payment,
-        "user": order.seller,  # Assuming seller gets the payout
-    }
-    payout = create_payout(payout_data)
+    # Create a payout for the order
+    payout_data = {"order_id": order.id, "storefront_id": order.storefront_id}
+    create_payout(payout_data)
 
-    return jsonify({"message": "Order completed and payout created", "payout": PayoutSchema.dump(payout)})
+    return jsonify({"message": "Order completed and payout created"}), 200
 
+ 
 # delete an order
 @bp.route("/<int:order_id>/", methods=["DELETE"])
 def delete_order(order_id):

@@ -47,6 +47,7 @@ class StorefrontSchema(BaseSchema):
     business_info = fields.Nested(BusinessInfoSchema, dump_only=True)
     admins = fields.List(fields.Nested(lambda: SellerSchema(exclude=("storefronts",))), dump_only=True)
     products = fields.List(fields.Nested(lambda: ProductSchema(exclude=("storefront",))), dump_only=True)
+    payout_method = fields.Str(allow_none=True)
 
 # ----------------- PRODUCT ------------------------#
 class ProductSchema(BaseSchema):
@@ -74,7 +75,7 @@ class OrderSchema(BaseSchema):
     status = fields.Str(validate=validate.OneOf(["pending", "shipped", "delivered", "cancelled"]), default="pending")
     user = fields.Nested(lambda: UserSchema(exclude=("orders",)), dump_only=True)
     shipping_address = fields.Nested(AddressSchema, dump_only=True)
-
+    storefront_id = fields.Int(required=True)
     payment = fields.Nested(lambda: PaymentSchema(exclude=("order",)), dump_only=True)
     products = fields.List(fields.Nested(ProductSchema), required=True, validate=validate.Length(min=1))
     payout = fields.Nested(lambda: PayoutSchema(exclude=("order",)), dump_only=True)
@@ -96,8 +97,7 @@ class PaymentSchema(BaseSchema):
 
 class PayoutSchema(BaseSchema):
     order = fields.Nested(lambda: OrderSchema(exclude=("payout",)), dump_only=True)
-    payment = fields.Nested(lambda: PaymentSchema(exclude=("payout",)), dump_only=True)
-    user = fields.Nested(lambda: UserSchema(exclude=("payouts",)), dump_only=True)
+    storefront = fields.Nested(lambda: StorefrontSchema(exclude=("payouts",)), dump_only=True)
     amount = fields.Decimal(as_string=True, required=True)
     transaction_id = fields.Str(required=True)
     status = fields.Str(default="pending")
