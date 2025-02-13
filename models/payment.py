@@ -20,4 +20,3 @@ class Payment(Base):
     #RELATESIES
     user: Mapped["User"] = relationship("User", back_populates="payments") #one user many payments
     order: Mapped["Order"] = relationship("Order", back_populates="payment", uselist=False) #one payment one order
-    payout: Mapped["Payout"] = relationship("Payout", back_populates="payment", uselist=False)
