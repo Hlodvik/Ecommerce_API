@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from .base import Base
 from models.associations import user_storefront
 if TYPE_CHECKING:
-    from models import  Product, BusinessInfo, User, Order
+    from models import  Product, BusinessInfo, User, Order, Payout
 
 class Storefront(Base):
     __tablename__ = "storefront"
@@ -22,4 +22,5 @@ class Storefront(Base):
     business_info: Mapped["BusinessInfo"] = relationship("BusinessInfo", back_populates="storefront", uselist=False)
     products: Mapped[list["Product"]] = relationship("Product", back_populates="storefront", foreign_keys="[Product.storefront_id]")
     orders: Mapped[list["Order"]] = relationship("Order", back_populates="storefront")
+    payouts: Mapped[list["Payout"]] = relationship("Payout", back_populates="storefront")  # one to many
 
