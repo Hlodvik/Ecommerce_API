@@ -1,41 +1,47 @@
 from flask import Blueprint, request, jsonify
+import requests
 from extensions import db
-from models import Payout 
+from models import Payout, Order 
 from schemas import PayoutSchema
 from routes.order_routes import create_order
 from utils import get_all, get_or_404, add_commit, exe_commit, del_commit, dbs
 payout_schema = PayoutSchema()
 
 bp = Blueprint("payout_routes", __name__, url_prefix="/payouts")
-
+ORDER_SERVICE_URL = "http://127.0.0.1:5000/orders/"
 #create payout
 @bp.route("/", methods=["POST"])
 def create_payout():
     data = request.get_json()
-    fields = ("user_id", "order_id", "amount", "transaction_id")   
+    fields = ("order_id", "amount", "transaction_id")   
 
-    # added this so that I could test this route in postman
-    if data.get("amount") and not data.get("order_id"):
+    missing_fields = [field for field in fields if field not in data]
+    if missing_fields:
+        return jsonify({"message": "Missing required fields", "missing": missing_fields}), 400
+
+    # added this to test routes in postman
+    if "amount" in data and "order_id" not in data:
         order_data = {
+            "user_id": 1,  # Default user ID
             "shipping_address_id": None,
             "payment_id": None,
             "products": [],
             "amount": data["amount"]
         }
 
-        response = create_order()   
-        if response.status_code != 201:# if doesn't succeed
-            return response  # return error 
-        
-        new_order = response.json  # extract created order from response
-        data["order_id"] = new_order["id"]  # assign order id for payout
-    if any(field not in data for field in fields):
-        return jsonify({"message": "Missing required fields"}), 400
- 
+        response = requests.post(ORDER_SERVICE_URL, json=order_data)  
+        if response.status_code != 201:
+            return jsonify({"error": response.text}), response.status_code
+        try:
+            new_order = response.json()
+        except requests.exceptions.JSONDecodeError:
+            return jsonify({"error": response.text}), 500
+        data["order_id"] = new_order.get("id")
+
+    new_order = get_or_404(Order, data["order_id"])
     new_payout = Payout(order_id=new_order.id, user_id=new_order.user_id, amount=data["amount"], transaction_id=data["transaction_id"], status="pending")
     add_commit(new_payout)
     return jsonify(payout_schema.dump(new_payout)), 201
-
 
 # get payout, can filter by order id
 @bp.route("/", methods=["GET"])

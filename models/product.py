@@ -19,7 +19,7 @@ class Product(Base):
     description: Mapped[Optional[str]] = mapped_column(String(500))
     price: Mapped[Decimal] = mapped_column(Numeric(6, 2), nullable=False)#found numeric quite handy. we dont trade in goods costing more than 999,999.99 in this hypothetical. someone spending that much probably wont mind calling to make the deal, eh?
     stock: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    hs_code: Mapped[str] = mapped_column(String(20), nullable=False)  #  harmonized system code, see readme tariffs
+    hs_code: Mapped[str] = mapped_column(String(20), nullable=True)  #  harmonized system code, see readme tariffs
     restricted: Mapped[bool] = mapped_column(Boolean, default=False) 
     restriction_reason: Mapped[Optional[str]] = mapped_column(String(255))
 

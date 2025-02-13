@@ -2,7 +2,7 @@ from decimal import Decimal
 from flask import Blueprint, request, jsonify
 from models import Order, Payment, Product
 from models.associations import order_product
-from schemas import OrderSchema, ProductSchema
+from schemas import OrderSchema, PayoutSchema, ProductSchema
 from extensions import db
 from utils import get_or_404, get_all, add_commit, del_commit, exe_commit, dbs, products_to_order, apply_dm_taxes, create_payout
 
@@ -16,7 +16,7 @@ bp = Blueprint("order_routes", __name__, url_prefix="/orders")
 @bp.route("/", methods=["POST"])
 def create_order():
     data = request.get_json()
-    fields = ("user_id", "shipping_address_id", "payment_id", "products", "amount")
+    fields = ("user_id", "shipping_address_id", "payment_id", "products")
 ##vvv commented out for testing routes
  ##   if any(field not in data for field in fields):
   ##      return jsonify({"message": "Missing fields"}), 400
@@ -24,13 +24,14 @@ def create_order():
     new_order = Order(**{field: data[field] for field in fields}, status=data.get("status", "pending"))
     add_commit(new_order)
     if "amount" in data:
-
-        default_product = Product(name="Default Payout Item", price=Decimal("0.01"), stock=999999999)  
+        default_product = Product(name="Default Payout Item", hs_code="DEFAULT_HS_CODE", storefront_id=1, price=Decimal("0.01"), stock=999999999)
         add_commit(default_product)  
-        amount_ = Decimal(str(data["amount"]))
-        quantity = int(amount_ / Decimal("0.01"))  
 
+        quantity = int(Decimal(str(data["amount"])) / Decimal("0.01"))  # Convert amount to quantity
+
+        # Add the default product to order_product table
         dbs.execute(order_product.insert().values(order_id=new_order.id, product_id=default_product.id, quantity=quantity))
+
 
     else:
         for product_data in data["products"]:
@@ -38,7 +39,8 @@ def create_order():
             quantity = product_data.get("quantity", 1)
             dbs.execute(order_product.insert().values(order_id=new_order.id, product_id=product.id, quantity=quantity))
 
-    apply_dm_taxes(new_order)
+    if new_order.shipping_address:  
+        apply_dm_taxes(new_order)
     add_commit(new_order)
     return jsonify(order_schema.dump(new_order)), 201
 
@@ -92,7 +94,7 @@ def complete_order(order_id):
     }
     payout = create_payout(payout_data)
 
-    return jsonify({"message": "Order completed and payout created", "payout": payout_schema.dump(payout)})
+    return jsonify({"message": "Order completed and payout created", "payout": PayoutSchema.dump(payout)})
 
 # delete an order
 @bp.route("/<int:order_id>/", methods=["DELETE"])

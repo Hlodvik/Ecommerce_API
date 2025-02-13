@@ -73,11 +73,12 @@ class CartProductSchema(Schema):
 class OrderSchema(BaseSchema):
     status = fields.Str(validate=validate.OneOf(["pending", "shipped", "delivered", "cancelled"]), default="pending")
     user = fields.Nested(lambda: UserSchema(exclude=("orders",)), dump_only=True)
-    shipping_address = fields.Nested(lambda: AddressSchema(exclude=("orders",)), dump_only=True)
-    payment = fields.Nested(lambda: PaymentSchema(exclude=("order",)), dump_only=True)
-    products = fields.List(fields.Nested(lambda: ProductSchema(exclude=("orders",))), required=True, validate=validate.Length(min=1))
-    payout = fields.Nested(lambda: PayoutSchema(exclude=("order",)), dump_only=True)
+    shipping_address = fields.Nested(AddressSchema, dump_only=True)
 
+    payment = fields.Nested(lambda: PaymentSchema(exclude=("order",)), dump_only=True)
+    products = fields.List(fields.Nested(ProductSchema), required=True, validate=validate.Length(min=1))
+    payout = fields.Nested(lambda: PayoutSchema(exclude=("order",)), dump_only=True)
+    
 class OrderProductSchema(Schema):
     order_id = fields.Int(required=True)
     product_id = fields.Int(required=True)

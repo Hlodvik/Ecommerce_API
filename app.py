@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from services.dm_service import seed_dm_cache
 from flask_migrate import Migrate
-from routes import user_routes, product_routes, order_routes, cart_routes, payment_routes, storefront_routes, address_routes
+from routes import user_routes, product_routes, order_routes, cart_routes, payment_routes, storefront_routes, address_routes, payout_routes
 import config
 from extensions import db
 
@@ -19,6 +19,7 @@ app.register_blueprint(product_routes.bp)
 app.register_blueprint(order_routes.bp)
 app.register_blueprint(cart_routes.bp)
 app.register_blueprint(payment_routes.bp)
+app.register_blueprint(payout_routes.bp)
 app.register_blueprint(storefront_routes.bp)
 app.register_blueprint(address_routes.bp)
 

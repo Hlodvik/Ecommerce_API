@@ -1,8 +1,9 @@
-from marshmallow import post_load
+from config import DM_API_KEY, DM_API_URL
 from extensions import db
 from flask import Flask, jsonify, abort
 from models import Product, Payout
 from models.associations import order_product
+from models.dm_cache import DMCache
 from schemas import PayoutSchema
 import requests, random, string
 from datetime import datetime, timezone
@@ -120,6 +121,8 @@ def products_to_order(order, products):
             exe_commit(order_product.insert().values(order_id=order.id, product_id=product.id, quantity=quantity))
     
 def apply_dm_taxes(order):
+    if order.shipping_address is None:
+        return 
     country_code = order.shipping_address.country_code  
     tax_data = check_product_dm(country_code)
 
@@ -144,10 +147,8 @@ def create_payout(data: dict) -> Payout:
     payout_data = PayoutSchema.load(data)
     payout_data.amount = payout_data.payment.amount
     payout_data.transaction_id = generate_transaction_id()
-
     db.session.add(payout_data)
     db.session.commit()
-
     return payout_data
 
 dbs = db.session
