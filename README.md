@@ -14,7 +14,7 @@ more on De Minimis API: https://internationaltradeadministration.github.io/devel
    @utils:   
 
 if I learned anything from the advanced python project, one doesn't simply *not* check if a thing being passed around actually has a value before using it. so, where ever
-it makes sense I do a "do I exist?" check. I feel like the lesson did not touch enough on ~~the numbered messages (201, 200, 404 etc)~~ on http status codes (or maybe I
+it makes sense I do a "do I exist?" check. I feel like the lesson did not touch enough on the numbered messages (201, 200, 404 etc) on http status codes (or maybe I
 accidentally skipped that part); but in the vein of writing code that looking similar to the pokemon api code in the study material and other examples I used from the web, I 
 was implementing status codes. the status codes and the "do I exist" checks were cramping things up so bad that I couldn't figure out what I still needed to get done. 
 *SO* I made some helper functions to cut down the repetitive code so that looking at everything would be easier.
@@ -23,12 +23,8 @@ was implementing status codes. the status codes and the "do I exist" checks were
 
                                                                      
   @BLUEPRINTS@
- 
-
-I feel like this was a risky move as the assignment has clear instructions on using create_all(), but I have WAY TOO MANY MODELS for this to be a single paged application
-without risking a heart attack. After app.py quickly became *overwhelming* I knew I needed to give models routes and everything more breathing room and separate things.
-asked the web how to do that effectively and Flasks blueprints were what I found to make this work. and as I continued researching, create_all() is never used in 
-real applications. so, please dont mark me off for this. for the sake of readability!! 
+After app.py quickly became overwhelming I knew I needed to give models routes and everything more breathing room and separate things.
+asked the web how to do that effectively and Flasks blueprints were what I found to make this work.
 
 
  @file organization
