@@ -28,4 +28,5 @@ if __name__ == "__main__":
     with app.app_context():
         from services.dm_service import seed_dm_cache 
         seed_dm_cache()#populates the cache on init with hardcoded data based on what I gathered online
+        db.create_all()
     app.run(debug=True)

@@ -7,4 +7,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 load_dotenv()  # Load .env variables
 
 DM_API_URL = os.getenv("CSL_API_URL")# see readme: @TARIFFS
-DM_API_KEY = os.getenv("CSL_API_KEY")# projects access to linked API of course
+DM_API_KEY = os.getenv("CSL_API_KEY")# projects access to linked API  
