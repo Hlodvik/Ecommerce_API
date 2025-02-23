@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import Payment
 from schemas import PaymentSchema
-from extensions import db
+from models.base import db
 from utils import get_or_404, get_all, add_commit, del_commit, dbs
 
 payment_schema = PaymentSchema()

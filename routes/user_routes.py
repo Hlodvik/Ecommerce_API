@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models.user import User
 from schemas import UserSchema
-from extensions import db
+from models.base import db
 from utils import get_or_404, add_commit, del_commit, dbs
 
 user_schema = UserSchema()

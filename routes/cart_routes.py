@@ -3,7 +3,7 @@ from models import  Cart, Product, User, Address
 from services.dm_service import check_product_dm
 from models.associations import cart_product
 from schemas import CartSchema, ProductSchema
-from extensions import db
+from models.base import db
 from utils import get_or_404, get_all, dbs, add_commit, exe_commit, del_commit
 
 cart_schema = CartSchema()

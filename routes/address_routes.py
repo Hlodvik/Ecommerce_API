@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import Address, User
 from schemas import AddressSchema
-from extensions import db
+from models.base import db
 from utils import dbs, add_commit, del_commit
 address_schema = AddressSchema()
 addresses_schema = AddressSchema(many=True)

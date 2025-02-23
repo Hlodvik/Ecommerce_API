@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 from models import Storefront, User
 from schemas import StorefrontSchema, UserSchema
-from extensions import db
+from models.base import db
 from utils import get_or_404, del_commit, add_commit, dbs
 
 storefront_schema = StorefrontSchema()

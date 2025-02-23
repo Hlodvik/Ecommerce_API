@@ -1,5 +1,5 @@
 from config import DM_API_KEY, DM_API_URL
-from extensions import db
+from models.base import db
 from flask import Flask, jsonify, abort
 from models import Product, Payout
 from models.associations import order_product

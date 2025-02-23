@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from models import Order, Payment, Product
 from models.associations import order_product
 from schemas import OrderSchema, PayoutSchema, ProductSchema
-from extensions import db
+from models.base import db
 from utils import get_or_404, get_all, add_commit, del_commit, exe_commit, dbs, products_to_order, apply_dm_taxes, create_payout
 
 order_schema = OrderSchema()

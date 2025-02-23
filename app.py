@@ -5,7 +5,7 @@ from services.dm_service import seed_dm_cache
 from flask_migrate import Migrate
 from routes import user_routes, product_routes, order_routes, cart_routes, payment_routes, storefront_routes, address_routes, payout_routes
 import config
-from extensions import db
+from models.base import db
 
 app = Flask(__name__)
 app.config.from_object(config)

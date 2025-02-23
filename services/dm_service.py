@@ -1,6 +1,6 @@
 import requests
 import os
-from extensions import db
+from models.base import db
 from models.dm_cache import DMCache 
 from utils import dbs
 from config import DM_API_KEY, DM_API_URL
